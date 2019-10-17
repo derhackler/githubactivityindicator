@@ -1,0 +1,33 @@
+{
+    "manifest_version": 2,
+    "name": "Github Activity Indicator",
+    "version": "1.0",
+    "description": "Shows the number of days since the last commit next to a link to a github repository. Only activates on github.com.",
+    "icons": {
+        "48": "icons/border-48.png"
+    },
+    "options_ui": {
+        "page": "options.html",
+        "browser_style": true
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{02694bc9-1d39-4426-b61a-db966c6ebfea}",
+            "strict_min_version": "57.0"
+        }
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.github.com/*"
+            ],
+            "js": [
+                "addindicators.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "https://api.github.com/*",
+        "storage"
+    ]
+}
