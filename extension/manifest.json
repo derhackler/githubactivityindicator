@@ -1,7 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Github Activity Indicator",
-    "version": "1.0",
+    "version": "1.1",
+    "author": "derhackler",
     "description": "Shows the number of days since the last commit next to a link to a github repository. Only activates on github.com.",
     "icons": {
         "48": "icons/border-48.png"
@@ -22,6 +23,7 @@
                 "*://*.github.com/*"
             ],
             "js": [
+                "browser-polyfill.min.js",
                 "addindicators.js"
             ]
         }

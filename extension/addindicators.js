@@ -29,17 +29,16 @@
 
 
     function augment_with_default_token() {
-        console.info("Querying github with the default access token. This may fail if too many\
-        users are using this extension. You can set a custom github access token in the configuration\
-        of the extension.", accessToken)
+        console.info("Querying github with the default access token. This may fail if too many " +
+            "users are using this extension. You can set a custom github access token in the configuration " +
+            "of the extension.", accessToken)
 
         accessToken = defaultAccessToken;
         augment_repos(accessToken);
     }
 
     function augment_with_custom_token(token) {
-        console.info("Querying github with the access token that was set \
-    in the plugin configuration: ", token);
+        console.info("Querying github with the access token that was set in the plugin configuration: ", token);
         augment_repos(token);
     }
 
