@@ -2,6 +2,8 @@
 
 A browser plugin, that augments links to github repositories.
 
+![repository links with indicators](indicator_example.jpg)
+
 ## Getting Started as User
 
   1. Seach for the "Github Activity Indicator" extension in the Chrome or Firefox.
