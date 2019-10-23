@@ -7,15 +7,19 @@
     "icons": {
         "48": "icons/border-48.png"
     },
-    "options_ui": {
-        "page": "options.html",
-        "browser_style": true
-    },
     "browser_specific_settings": {
         "gecko": {
             "id": "{02694bc9-1d39-4426-b61a-db966c6ebfea}",
             "strict_min_version": "57.0"
         }
+    },
+    "permissions": [
+        "https://api.github.com/*",
+        "storage"
+    ],
+    "options_ui": {
+        "page": "options.html",
+        "browser_style": true
     },
     "content_scripts": [
         {
@@ -27,9 +31,5 @@
                 "addindicators.js"
             ]
         }
-    ],
-    "permissions": [
-        "https://api.github.com/*",
-        "storage"
     ]
 }

@@ -1,4 +1,12 @@
 (function () {
+    // if the githubactivityindicator_debug key is set to true in local storage, debugging of the extension
+    // will be enabled
+    let storeDebugEnabled = browser.storage.local.get('githubactivityindicator_debug');
+    storeDebugEnabled.then((res) => {
+        window.debugEnabled = res.githubactivityindicator_debug;
+    });
+
+
     const defaultAccessToken = "1a508d88a2c45dc12c25b34b3385c216dbfe3073";
     const NOT_A_REPO = Symbol("NOT_A_REPO");
 
@@ -9,7 +17,7 @@
     let gettingItem = browser.storage.sync.get('github_token');
     gettingItem.then((res) => {
         accessToken = res.github_token;
-        if (accessToken !== null && accessToken !== undefined && accessToken !== 'Undefined' && accessToken !== '') {
+        if (isTokenValid(maybetoken)) {
             augment_with_custom_token(accessToken);
         }
         else {
@@ -20,13 +28,12 @@
         augment_with_default_token();
     });
 
-    // if the githubactivityindicator_debug key is set to true in local storage, debugging of the extension
-    // will be enabled
-    let storeDebugEnabled = browser.storage.local.get('githubactivityindicator_debug');
-    storeDebugEnabled.then((res) => {
-        window.debugEnabled = res.githubactivityindicator_debug;
-    });
-
+    function isTokenValid(maybetoken) {
+        return (maybetoken !== null
+            && maybetoken !== undefined
+            && maybetoken !== 'Undefined'
+            && maybetoken !== '')
+    }
 
     function augment_with_default_token() {
         console.info("Querying github with the default access token. This may fail if too many " +
@@ -67,9 +74,26 @@
         let body = await response.json();
         dlog('response as json', body);
 
-        // augment all link elements
         let repoinfos = extract_from_graph(body);
+
+        // augment all link elements
         repoinfos.forEach(x => extend_link(x));
+    }
+
+    function extend_link(repoinfo) {
+        dlog("extending link for", repoinfo);
+
+        const elem = document.createElement("span");
+        elem.textContent = repoinfo.lastPushedDaysAgo;
+        elem.style.backgroundColor = "#dfe6e9";
+        elem.style.fontSize = "9px";
+        elem.style.height = "10px";
+        elem.style.marginLeft = "7px";
+
+        selector = "a[href='https://github.com/" + repoinfo.repo + "']";
+
+        let els = Array.from(document.querySelectorAll(selector));
+        els.forEach(e => e.insertAdjacentElement("afterend", elem));
     }
 
     function extract_from_graph(resp) {
@@ -79,16 +103,7 @@
             .map(x => { return { repo: x[1].nameWithOwner, lastPushedDaysAgo: daysAgo(x[1].pushedAt) } });
     }
 
-    function query_github(query, accessToken) {
-        const github = "https://api.github.com/graphql"
-        return fetch(github, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'bearer ' + accessToken
-            },
-            body: JSON.stringify({ "query": query }),
-        })
-    }
+
 
     function maybe_repo_link(href) {
         dlog('link on page: ', href);
@@ -99,11 +114,10 @@
         return NOT_A_REPO;
     }
 
-
     function is_repository(mayberepo) {
         dlog(`maybegithub internal: `, mayberepo);
         const norepo = ['settings', 'site', 'features', 'new', 'organizations', 'topics', 'GoogleChrome', 'account'];
-        return !norepo.some(element => mayberepo.startsWith(element));
+        return !norepo.some(element => mayberepo.startsWith(element + '/'));
     }
 
     function graphql_for_repos(repos) {
@@ -132,6 +146,17 @@
             ...fields
         },
         `
+    }
+
+    function query_github(query, accessToken) {
+        const github = "https://api.github.com/graphql"
+        return fetch(github, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'bearer ' + accessToken
+            },
+            body: JSON.stringify({ "query": query }),
+        })
     }
 
     function extend_link(repoinfo) {
